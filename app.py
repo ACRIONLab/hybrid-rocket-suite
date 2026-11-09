@@ -12,7 +12,7 @@ import streamlit as st
 from plotly.subplots import make_subplots
 from scipy.integrate import trapezoid
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[0]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
