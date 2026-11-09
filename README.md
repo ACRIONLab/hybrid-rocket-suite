@@ -1,3 +1,7 @@
+# FIRELINE: Hybrid Rocket Simulator
+
+![FIRELINE](docs/fireline_featured.png)
+
 # Hybrid Rocket Suite
 
 Hybrid Rocket Suite is a collection of tools for hybrid rocket engine
@@ -65,6 +69,20 @@ web UI. `index.html` contains the frontend components used to present controls
 and results. Python packages and version constraints are managed through
 `requirements.txt`, while the domain logic is separated into `core` and
 `optimization` modules.
+
+## Verification
+
+The simulator is checked against exact analytical solutions: port regression, nozzle
+relations, mass conservation and choked-flow consistency. The port-radius error at the
+default time step is 0.05 % and falls in proportion to the step size. This is code
+verification, not validation against real motor tests. See
+[docs/VERIFICATION.md](docs/VERIFICATION.md) for results and limitations.
+
+Run the tests from the repository root:
+
+```bash
+python tests/test_engine_verification.py
+```
 
 ## License
 
