@@ -242,7 +242,7 @@ class HybridRocketSimulator:
             )
 
             step = min(self.time_step, self.burn_time - time)
-            if step <= 0:
+            if step <= 1e-9:
                 break
             radius = min(
                 _finite_scalar(radius + rate * step, outer_radius), outer_radius

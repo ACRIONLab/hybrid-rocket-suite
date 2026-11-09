@@ -299,8 +299,8 @@ primary.add_trace(
     ),
     secondary_y=True,
 )
-primary.update_yaxes(title_text="THRUST · kN", secondary_y=False, gridcolor=grid)
-primary.update_yaxes(title_text="CHAMBER PRESSURE · bar", secondary_y=True, gridcolor="rgba(0,0,0,0)")
+primary.update_yaxes(title_text="THRUST · kN", secondary_y=False, gridcolor=grid, rangemode="tozero")
+primary.update_yaxes(title_text="CHAMBER PRESSURE · bar", secondary_y=True, gridcolor="rgba(0,0,0,0)", rangemode="tozero")
 primary.update_xaxes(title_text="MISSION ELAPSED TIME · s", gridcolor=grid)
 primary.update_layout(
     height=430, margin=dict(l=30, r=30, t=55, b=30), paper_bgcolor=chart_bg,
@@ -463,14 +463,17 @@ with optimization_tab:
             )
 
         comparison.update_layout(
-            title="BASELINE VS OPTIMIZED THRUST ENVELOPE",
-            height=470,
+            title=dict(
+                text="BASELINE VS OPTIMIZED THRUST ENVELOPE",
+                x=0, xanchor="left", y=0.98, yanchor="top",
+            ),
+            height=500,
             paper_bgcolor=chart_bg,
             plot_bgcolor=chart_bg,
             font=dict(family="IBM Plex Mono", color=text, size=10),
-            margin=dict(t=80, b=50, l=50, r=50),
+            margin=dict(t=135, b=50, l=50, r=50),
             legend=dict(
-                orientation="h", yanchor="bottom", y=1.05,
+                orientation="h", yanchor="bottom", y=1.02,
                 xanchor="left", x=0,
             ),
             hovermode="x unified",

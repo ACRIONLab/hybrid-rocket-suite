@@ -94,6 +94,15 @@ def test_choked_flow_consistency():
     assert np.max(np.abs(mdot_back - mdot) / mdot) < 1e-9
 
 
+def test_no_duplicate_final_sample():
+    """The time history ends exactly once at the burn time (no repeated row)."""
+    for burn in (5.0, 5.5, 7.3):
+        df = HybridRocketSimulator(burn_time=burn).simulate()
+        t = df["time_s"].to_numpy()
+        assert np.all(np.diff(t) > 1e-6)
+        assert abs(t[-1] - burn) < 1e-6
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     failed = 0
