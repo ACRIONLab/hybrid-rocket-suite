@@ -83,6 +83,15 @@ Run the tests from the repository root:
 ```bash
 python tests/test_engine_verification.py
 ```
+## Model limitations
+
+- Quasi-steady model: no ignition transient, chamber filling or feed-system dynamics.
+- Characteristic velocity (c*) and discharge coefficient are fixed inputs; combustion
+  chemistry is not computed.
+- A single power-law regression model; erosive and radiation effects are ignored.
+- The optimizer searches grain length 0.25 to 1.20 m, throat area 280 to 1100 mm², and
+  expansion ratio 2 to 14. The reported optimum grain length (1.20 m) sits at the upper
+  search limit, so it is constrained by the bound and is not a true interior optimum.
 
 ## License
 
