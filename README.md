@@ -1,6 +1,7 @@
 # FIRELINE: Hybrid Rocket Simulator
 
-![FIRELINE](docs/fireline_featured.png)
+  <img width="800" alt="FIRELINE Hybrid Rocket Simulator" src="https://github.com/user-attachments/assets/497d0b11-8db7-4a6b-8fa4-99d5b956ad76" />
+
 
 [![Live Demo](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://fireline-hybrid-rocket.streamlit.app)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
