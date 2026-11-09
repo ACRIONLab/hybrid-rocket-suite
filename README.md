@@ -2,12 +2,31 @@
 
 ![FIRELINE](docs/fireline_featured.png)
 
-# Hybrid Rocket Suite
+[![Live Demo](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://fireline-hybrid-rocket.streamlit.app)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-Hybrid Rocket Suite is a collection of tools for hybrid rocket engine
+**🔥 Live demo: https://fireline-hybrid-rocket.streamlit.app**
+*(Free hosting sleeps when idle, so the first load may take a few seconds.)*
+
+**Hybrid Rocket Suite** is a collection of tools for hybrid rocket engine
 calculations, performance analysis, design optimization, and interactive web
-visualization. It combines the simulation backend with a browser-based user
-interface for exploring engine inputs and results.
+visualization.
+
+## Features
+
+- Live 1D internal-ballistics simulation: port regression, choked chamber
+  pressure, and nozzle thrust
+- Interactive input manifold for oxidizer flow rate, port diameter, grain
+  length, and burn time
+- Altitude and nozzle optimization with a robust ascent design search
+- Verified against analytical solutions (see [Verification](#verification))
+
+## Example output (default inputs)
+
+| Mean thrust | Peak chamber pressure | Total impulse | Mean O/F |
+|---|---|---|---|
+| 6.08 kN | 81.6 bar | 18.3 kN·s | 4.17 |
 
 ## Prerequisites
 
