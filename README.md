@@ -98,11 +98,14 @@ default time step is 0.05 % and falls in proportion to the step size. This is co
 verification, not validation against real motor tests. See
 [docs/VERIFICATION.md](docs/VERIFICATION.md) for results and limitations.
 
+![Time-step convergence](docs/convergence.png)
+
 Run the tests from the repository root:
 
 ```bash
 python tests/test_engine_verification.py
 ```
+
 ## Model limitations
 
 - Quasi-steady model: no ignition transient, chamber filling or feed-system dynamics.
