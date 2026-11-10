@@ -95,10 +95,15 @@ and results. Python packages and version constraints are managed through
 The simulator is checked against exact analytical solutions: port regression, nozzle
 relations, mass conservation and choked-flow consistency. The port-radius error at the
 default time step is 0.05 % and falls in proportion to the step size. This is code
-verification, not validation against real motor tests. See
+verification; it does not by itself show agreement with real motors (see the comparison with published data below). Details are in
 [docs/VERIFICATION.md](docs/VERIFICATION.md) for results and limitations.
 
 ![Time-step convergence](docs/convergence.png)
+
+**Comparison with published data:** fuel mass consumed is compared with six N₂O/HDPE
+firings from Kamps et al. (2019, doi:10.3390/aerospace6040045). With the paper's regression
+constants the model is within about 5 % on 10 to 15 s burns. This is a consistency check, not
+a full validation. See [docs/VALIDATION.md](docs/VALIDATION.md).
 
 Run the tests from the repository root:
 
@@ -115,6 +120,8 @@ python tests/test_engine_verification.py
 - The optimizer searches grain length 0.25 to 1.20 m, throat area 280 to 1100 mm², and
   expansion ratio 2 to 14. The reported optimum grain length (1.20 m) sits at the upper
   search limit, so it is constrained by the bound and is not a true interior optimum.
+- The default regression constants (a = 6.30e-5, n = 0.62) are not valid for every propellant pair
+  (they over-predict fuel mass for N2O/HDPE by 17 to 48 %); set them for the case being studied.
 
 ## License
 
