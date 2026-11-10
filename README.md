@@ -23,11 +23,11 @@ visualization.
 - Altitude and nozzle optimization with a robust ascent design search
 - Verified against analytical solutions (see [Verification](#verification))
 
-## Example output (default inputs)
+## Example output (default inputs: 1.5 kg/s, 40 mm port, 0.5 m grain, 5 s burn)
 
 | Mean thrust | Peak chamber pressure | Total impulse | Mean O/F |
 |---|---|---|---|
-| 6.08 kN | 81.6 bar | 18.3 kN·s | 4.17 |
+| 4.29 kN | 57.9 bar | 21.5 kN·s | 5.51 |
 
 ## Prerequisites
 
