@@ -22,6 +22,7 @@ visualization.
   length, and burn time
 - Altitude and nozzle optimization with a robust ascent design search
 - Verified against analytical solutions (see [Verification](#verification))
+- Optional injector-coupled oxidizer flow (see [docs/INJECTOR_COUPLING.md](docs/INJECTOR_COUPLING.md))
 
 ## Example output (default inputs: 1.5 kg/s, 40 mm port, 0.5 m grain, 5 s burn)
 
