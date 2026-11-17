@@ -123,6 +123,7 @@ python tests/test_engine_verification.py
   search limit, so it is constrained by the bound and is not a true interior optimum.
 - The default regression constants (a = 6.30e-5, n = 0.62) are not valid for every propellant pair
   (they over-predict fuel mass for N2O/HDPE by 17 to 48 %); set them for the case being studied.
+- The injector option assumes constant tank pressure and single-phase flow; it is not yet compared with measured injector      data.
 
 ## License
 
