@@ -78,6 +78,12 @@ class HybridRocketSimulator:
     nozzle_discharge_coefficient: float = 0.98
     ambient_pressure: float = 101_325.0
     time_step: float = 0.02
+    # Optional injector coupling (off unless tank_pressure > 0 and injector_area > 0).
+    # When on, oxidizer_flow_rate is ignored and solved each step from the injector pressure drop.
+    tank_pressure: float = 0.0
+    injector_area: float = 0.0
+    injector_discharge_coefficient: float = 0.70
+    oxidizer_density: float = 800.0
 
     def __post_init__(self) -> None:
         defaults = {
@@ -100,6 +106,15 @@ class HybridRocketSimulator:
         for name, default in defaults.items():
             setattr(self, name, _finite_scalar(getattr(self, name), default))
         self.ambient_pressure = max(self.ambient_pressure, 0.0)
+        for name, default in {
+            "tank_pressure": 0.0,
+            "injector_area": 0.0,
+            "injector_discharge_coefficient": 0.70,
+            "oxidizer_density": 800.0,
+        }.items():
+            setattr(self, name, _finite_scalar(getattr(self, name), default))
+        self.tank_pressure = max(self.tank_pressure, 0.0)
+        self.injector_area = max(self.injector_area, 0.0)
 
         positive = {
             "oxidizer_flow_rate": self.oxidizer_flow_rate,
@@ -125,6 +140,10 @@ class HybridRocketSimulator:
             raise ValueError("specific_heat_ratio must be between one and two")
         if self.expansion_ratio <= 1:
             raise ValueError("expansion_ratio must be greater than one")
+        if not 0 < self.injector_discharge_coefficient <= 1:
+            raise ValueError("injector_discharge_coefficient must be in (0, 1]")
+        if self.oxidizer_density <= 0:
+            raise ValueError("oxidizer_density must be positive")
 
     @property
     def throat_area(self) -> float:
@@ -171,6 +190,45 @@ class HybridRocketSimulator:
         pressure = np.divide(mass_flow * self.characteristic_velocity, denominator)
         return max(_finite_scalar(pressure, 0.0), 0.0)
 
+    @property
+    def injector_coupling_enabled(self) -> bool:
+        """True when the oxidizer flow is solved from the injector pressure drop."""
+        return self.tank_pressure > 0.0 and self.injector_area > 0.0
+
+    def _solve_coupled_oxidizer_flow(self, port_radius: float) -> float:
+        """Solve the oxidizer flow that balances injector and nozzle at this instant.
+
+        Unknown: m (oxidizer flow).  Chamber pressure follows from choked flow,
+        Pc(m) = (m + fuel_flow(m)) * c* / (Cd_nozzle * At), and the injector
+        passes m = Cd_inj * A_inj * sqrt(2 * rho * (P_tank - Pc)).
+        The residual m - injector(m) is negative at m = 0 and positive at the
+        flow that would drive Pc up to the tank pressure, so brentq is safe.
+        """
+        radius = max(_finite_scalar(port_radius, self.initial_port_diameter / 2.0), _FLOAT_EPSILON)
+        port_area = np.pi * radius**2
+        burning_area = 2.0 * np.pi * radius * self.grain_length
+        nozzle_gain = self.characteristic_velocity / _safe_denominator(
+            self.nozzle_discharge_coefficient * self.throat_area
+        )
+        injector_gain = (
+            self.injector_discharge_coefficient
+            * self.injector_area
+            * np.sqrt(2.0 * self.oxidizer_density)
+        )
+
+        def chamber_pressure_for(flow: float) -> float:
+            fuel = self.fuel_density * burning_area * self.regression_coefficient * (
+                flow / port_area
+            ) ** self.regression_exponent
+            return (flow + fuel) * nozzle_gain
+
+        def residual(flow: float) -> float:
+            headroom = self.tank_pressure - chamber_pressure_for(flow)
+            return flow - injector_gain * np.sqrt(max(headroom, 0.0))
+
+        upper = self.tank_pressure / nozzle_gain      # total flow that would reach P_tank
+        return float(brentq(residual, 0.0, upper, xtol=1e-14, rtol=1e-13))
+
     def _exit_mach(self) -> float:
         return _solve_supersonic_exit_mach(
             self.specific_heat_ratio, self.expansion_ratio
@@ -205,8 +263,18 @@ class HybridRocketSimulator:
         radius = self.initial_port_diameter / 2.0
         outer_radius = self.outer_grain_diameter / 2.0
         time = 0.0
+        user_oxidizer_flow = self.oxidizer_flow_rate
+        coupled = self.injector_coupling_enabled
 
+        try:
+            return self._integrate(rows, radius, outer_radius, time, coupled)
+        finally:
+            self.oxidizer_flow_rate = user_oxidizer_flow
+
+    def _integrate(self, rows, radius, outer_radius, time, coupled) -> pd.DataFrame:
         while time <= self.burn_time + 1e-12 and radius < outer_radius:
+            if coupled:
+                self.oxidizer_flow_rate = self._solve_coupled_oxidizer_flow(radius)
             flux = self.oxidizer_mass_flux(radius)
             rate = self.regression_rate(radius)
             fuel_flow = self.fuel_mass_flow(radius)
@@ -238,6 +306,11 @@ class HybridRocketSimulator:
                     "chamber_pressure_bar": pressure / 100_000.0,
                     "thrust_n": thrust,
                     "specific_impulse_s": specific_impulse,
+                    **(
+                        {"oxidizer_flow_kg_s": self.oxidizer_flow_rate}
+                        if coupled
+                        else {}
+                    ),
                 }
             )
 
